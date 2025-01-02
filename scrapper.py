@@ -19,14 +19,15 @@ subreddits = ['MachineLearning', 'MachineLearningJobs']
 def reading_subreddits(value):
 
         value = reddit.subreddit(value)
-
-        print(value.display_name)
-
-        print(value.title)
-
-        print(value.description)
+        print(f"reddit {value}")
+        print()
+        for submission in value.hot(limit=2):
+                print(submission.title)
+                print()
+                print(submission.description)
 
 
 for subreddit in subreddits:
         
         reading_subreddits(subreddit)
+
