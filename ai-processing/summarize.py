@@ -9,7 +9,7 @@ from transformers import pipeline
 # Iterate through each dataframe and summarize it using the greedy decoder
 def summarize_content(df, summarizer):
 
-    df['summary'] = df['Content'].apply(lambda x: summarizer(x, truncation=True, max_length=50, min_length=10, do_sample=False)[0]['summary_text'])
+    df['summary'] = df['Content'].apply(lambda x: summarizer(x, truncation=True, max_length=130, min_length=20, do_sample=False)[0]['summary_text'])
     df = df.drop(columns=['Body', 'Content'])
     print(df["summary"])
 
