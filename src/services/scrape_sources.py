@@ -1,10 +1,7 @@
 from dotenv import load_dotenv
 from firecrawl import FirecrawlApp
-import requests
 import asyncpraw
 from datetime import datetime, timedelta
-import random
-import time
 from pydantic import BaseModel
 from typing import List, Dict
 import urllib.parse
@@ -82,6 +79,7 @@ async def scrape_sources(sources):
         use_scrape = True
 
         for source in sources:
+            print(f"Source: {source}")
             if "x.com" in source and use_x:
 
                 username = source.split("/")[-1]
@@ -166,42 +164,45 @@ async def scrape_sources(sources):
 
             else:
                 if use_scrape:
+                    try:
 
-                    current_date = datetime.now()
-                    formatted_date = current_date.strftime("%x")
+                        current_date = datetime.now()
+                        formatted_date = current_date.strftime("%x")
 
-                    prompt_from_firecrawl = f"""
-                            Return only today's AI or LLM related story or post headlines and links in JSON format from the page content.
-                            They must be posted today, {formatted_date}. The format should be:
-                            {{
-                            "stories": [
+                        prompt_from_firecrawl = f"""
+                                Return only today's AI or LLM related story or post headlines and links in JSON format from the page content.
+                                They must be posted today, {formatted_date}. The format should be:
                                 {{
-                                    "headline": "headline1",
-                                    "link": "link1",
-                                    "date_posted": "YYYY-MM-DD"
+                                "stories": [
+                                    {{
+                                        "headline": "headline1",
+                                        "link": "link1",
+                                        "date_posted": "YYYY-MM-DD"
+                                    }}
+                                ]
                                 }}
-                            ]
-                            }}
-                            If there are no AI or LLM stories from today, return {{"stories": []}}.
-                            The source link is {source}.
-                            If a story link is not absolute, prepend {source} to make it absolute.
-                            Return only pure JSON in the specified format (no extra text, no markdown, no ```).
-                            """
+                                If there are no AI or LLM stories from today, return {{"stories": []}}.
+                                The source link is {source}.
+                                If a story link is not absolute, prepend {source} to make it absolute.
+                                Return only pure JSON in the specified format (no extra text, no markdown, no ```).
+                                """
 
-                    scrape_result = app.scrape_url(source, {
-                        'formats': ['extract'],
-                        'extract': {
-                            'prompt': prompt_from_firecrawl,
-                            'schema': Story.model_json_schema(),
-                        }
-                    })
+                        scrape_result = app.scrape_url(source, {
+                            'formats': ['extract'],
+                            'extract': {
+                                'prompt': prompt_from_firecrawl,
+                                'schema': Story.model_json_schema(),
+                            }
+                        })
 
 
-                    today_stories = scrape_result['extract']
-                    print(today_stories)
-                    combined_text['stories'].extend(today_stories)
+                        today_stories = scrape_result['extract']
+                        print(today_stories)
+                        combined_text['stories'].extend(today_stories)
+                    except Exception as e:
+                        print(f"Error while fetching news resources: {e}")
 
-        raw_stories = combined_text['sotries']
+        raw_stories = combined_text['stories']
         return raw_stories
 
     except Exception as e:
