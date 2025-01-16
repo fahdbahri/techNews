@@ -71,12 +71,9 @@ async def generate_drafts(raw_stories: str):
 
         header = f"🚀 AI and LLM Trends on X for {current_date}\n\n"
 
-        # Assuming parsed_response has the same structure as in the JavaScript code
-
         draft_post = header + "\n\n".join(
 
-            f"• {tweet_or_story['description']}\n  {
-                tweet_or_story['story_or_tweets_link']}"
+            f"• {tweet_or_story['description']}\n  {tweet_or_story['story_or_tweets_link']}"
 
             for tweet_or_story in parsed_response.get('interesting_stories_or_tweets', [])
 
