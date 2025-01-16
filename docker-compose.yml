@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - CLIENT_USER=${CLIENT_USER}
+      - FIRECRAWL_API=${FIRECRAWL_API}
+      - X_API_KEY=${X_API_KEY}
+      - X_API_KEY_SECRET=${X_API_KEY_SECRET}
+      - X_API_BEARER={X_API_BEARER}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+    ports:
+      - "3000:3000"
