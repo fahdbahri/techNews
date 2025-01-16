@@ -85,8 +85,7 @@ async def scrape_sources(sources):
                 username = source.split("/")[-1]
                 print(username)
 
-                query_username = f'from:{
-                    username} has:media -is:retweet -is:reply'
+                query_username = f"from:{username} has:media -is:retweet -is:reply"
                 encoded_username = urllib.parse.quote(query_username)
 
                 # Tweets from the last 24 hours
@@ -102,15 +101,11 @@ async def scrape_sources(sources):
                 }
 
                 headers = await request_headers(bearer_token)
-                print(headers)
-                print("working")
-
-                response_json = await connect_to_endpoint(
-                    endpoint_url, headers, query_parameters)
+                response_json = await connect_to_endpoint(endpoint_url, headers, query_parameters)
                 
                 
                 if response_json is None:
-                    print("No data recieved")
+                    print("No data recieved for now, we will try again later")
                 elif response_json.get('meta', {}).get('result.count', 0):
                     print(f"No tweets in found in the username {username}")
                 elif isinstance(response_json.get('data'), list):
@@ -129,8 +124,7 @@ async def scrape_sources(sources):
                     combined_text['stories'].extend(stories)
 
                 else:
-                    print(f"Expected an tweets.data to be an arrray: {
-                        response_json.get('data')}")
+                    print(f"Expected an tweets.data to be an arrray: {response_json.get('data')}")
 
             elif "reddit.com" in source and use_reddit:
 
