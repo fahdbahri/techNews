@@ -1,6 +1,6 @@
 # TechNews Aggregator 🚀
 
-Tired of missing out on the latest trends in AI? Struggling to keep up with the flood of research papers, product launches, and influencer updates? **TechNews Aggregator** is here to help! Using state-of-the-art AI, this project aggregates news from key sources worldwide, summarizes it, and delivers real-time updates directly to you via Telegram.
+This project aggregates news from key sources worldwide, summarizes it, and delivers real-time updates directly to you via Telegram.
 
 ## 🌟 Features
 
