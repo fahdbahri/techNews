@@ -59,25 +59,7 @@ To make deployment easier, the project includes Docker configurations.
    ```bash
    docker-compose up
    ```
-
-## 🌍 Join the Community
-
-- Get consolidated updates from the AI world by joining the Telegram group: [Trending Tech News AI](https://t.me/trendingtechnewsai)
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to submit issues or pull requests to improve this project.
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature-name`.
-3. Commit your changes: `git commit -m 'Add a feature'`.
-4. Push to the branch: `git push origin feature-name`.
-5. Open a pull request.
-
-## 📜 License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
+   
 ## 🙌 Acknowledgments
 
 Thanks to:
