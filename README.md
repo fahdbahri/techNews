@@ -1,15 +1,15 @@
-# introducing Tech News 🚀
+# introducing Tech News 
 
 This project aggregates news from key sources worldwide, summarizes it, and delivers real-time updates directly to you via Telegram.
 
-## 🌟 Features
+## Features
 
 - **AI-Powered Summaries**: Uses [Llama](https://github.com/facebookresearch/llama) to generate concise, accurate summaries of trending news.
 - **Real-Time Notifications**: Stay updated on new trends and launches with instant Telegram Bot alerts.
 - **Efficient Workflow**: Save time and focus on what's important by cutting through the noise of multiple platforms.
 - **Open Source**: Clone it, customize it, and make it your own!
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 - **Python**: The backbone of the system.
 - **Llama**: AI model for powerful summarization and content processing.
@@ -17,13 +17,13 @@ This project aggregates news from key sources worldwide, summarizes it, and deli
 - **Together AI**: Collaboration and AI infrastructure.
 - **Telegram Bot**: Sends real-time notifications to your Telegram account.
 
-## 🚀 How It Works
+## How It Works
 
 1. **Aggregates News**: Gathers updates from industry leaders and key influencers across platforms.
 2. **Summarizes**: Uses Llama to provide concise, easy-to-digest summaries.
 3. **Notifies**: Sends Telegram notifications whenever new trends or launches are detected.
 
-## 📥 Installation
+## Installation
 
 1. **Clone the Repository**:
    ```bash
@@ -46,7 +46,7 @@ This project aggregates news from key sources worldwide, summarizes it, and deli
    python src/main.py
    ```
 
-## 🔅 Docker Deployment
+## Docker Deployment
 
 To make deployment easier, the project includes Docker configurations.
 
@@ -60,7 +60,7 @@ To make deployment easier, the project includes Docker configurations.
    docker-compose up
    ```
    
-## 🙌 Acknowledgments
+## Acknowledgments
 
 Thanks to:
 - The creators of [Llama](https://github.com/facebookresearch/llama) for their groundbreaking AI model.
