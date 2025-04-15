@@ -8,6 +8,7 @@ import json
 
 async def handle_cron() -> None:
     try:
+        print("Starting cron job...")
         cron_sources = await get_sources()
         raw_stories = await scrape_sources(cron_sources)
         raw_stories_string = json.dumps(raw_stories)

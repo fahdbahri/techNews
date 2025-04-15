@@ -8,6 +8,7 @@ import urllib.parse
 import os
 import aiohttp
 import asyncio
+from .util_cache import is_content_processed, mark_content_processed
 
 load_dotenv()
 
@@ -111,17 +112,15 @@ async def scrape_sources(sources):
                 elif isinstance(response_json.get('data'), list):
                     print(f"Tweets found from username {username}")
 
-                    stories = [
-                        {
-                            "headline": tweet['text'],
-                            "link": f"https://x.com/i/status/{tweet['id']}",
-                            "date_posted": start_time
-
-                        }
-                        for tweet in response_json['data']
-                    ]
-
-                    combined_text['stories'].extend(stories)
+                    for tweet in response_json['data']:
+                        tweet_id = tweet['id']
+                        if not await is_content_processed(tweet_id):
+                            combined_text['stories'].append({
+                                "headline": tweet['text'],
+                                "link": f"https://x.com/i/status/{tweet_id}",
+                                "date_posted": start_time
+                            })
+                            await mark_content_processed(tweet_id)
 
                 else:
                     print(f"Expected an tweets.data to be an arrray: {response_json.get('data')}")
