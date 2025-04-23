@@ -2,6 +2,7 @@ from controllers.handle_cron import *
 from dotenv import load_dotenv
 import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
 load_dotenv()
@@ -11,7 +12,7 @@ async def main():
     scheduler = AsyncIOScheduler()
     
     # Schedule the job
-    scheduler.add_job(handle_cron, 'cron', hour='8', minute='30')
+    scheduler.add_job(handle_cron, trigger=IntervalTrigger(hours=24), next_run_time=datetime.now())
     
     try:
         scheduler.start()
