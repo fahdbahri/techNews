@@ -17,4 +17,4 @@ RUN pip install -r requirements.txt
 COPY ./src ./src
 
 # Command to run your application
-CMD ["python3", "./src/main.py"]
+CMD ["python3", "-u", "./src/main.py"]
