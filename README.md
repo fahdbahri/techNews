@@ -1,4 +1,4 @@
-# introducing Tech News 
+# introducing techNews
 
 This project aggregates news from key sources worldwide, summarizes it, and delivers real-time updates directly to you via Telegram.
 
