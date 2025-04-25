@@ -8,37 +8,40 @@ from datetime import datetime
 load_dotenv()
 
 async def main():
-    # Create an async scheduler
-    scheduler = AsyncIOScheduler()
-    
-    # Schedule the job
-    scheduler.add_job(handle_cron, trigger=IntervalTrigger(hours=24), next_run_time=datetime.now())
-    
-    try:
-        scheduler.start()
-        print("Scheduler started. Press Ctrl+C to exit")
-        
-        # Keep the script running
-        while True:
-            await asyncio.sleep(60)
-            
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
-        print("Scheduler stopped")
-
+     print(f"News of Today: {datetime.now().strftime('%Y-%m-%d')}") 
+     # Create an async scheduler
+     scheduler = AsyncIOScheduler()
+     
+     # Schedule the job
+     scheduler.add_job(handle_cron, trigger=IntervalTrigger(hours=48), next_run_time=datetime.now())
+     
+     try:
+         scheduler.start()
+         print("Scheduler started. Press Ctrl+C to exit")
+         
+         # Keep the script running
+         while True:
+             await asyncio.sleep(60)
+ 
+ 
+             
+     except (KeyboardInterrupt, SystemExit):
+         scheduler.shutdown()
+         print("Scheduler stopped")
+ 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except Exception as e:
-        print(f"Error in scheduler: {e}")
+     try:
+         asyncio.run(main())
+     except Exception as e:
+         print(f"Error in scheduler: {e}")
 
 
 
 
-# async def main():
+#async def main():
 #     await handle_cron()
-
-# if __name__ == "__main__":
+#
+#if __name__ == "__main__":
 #     try:
 #         asyncio.run(main())
 #     except Exception as e:
