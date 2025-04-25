@@ -9,6 +9,7 @@ import os
 import aiohttp
 import asyncio
 from .util_cache import is_content_processed, mark_content_processed
+from hashlib import sha256
 
 load_dotenv()
 
@@ -17,7 +18,7 @@ app = FirecrawlApp(api_key=os.getenv("FIRECRAWL_API"))
 
 # Load the bearer token and endpoint for X 
 bearer_token = os.getenv("X_API_BEARER") 
-endpoint_url = "https://api.x.com/2/tweets/search/recent"
+endpoint_url = "https://api.twitter.com/2/tweets/search/recent"
 
 
 # Define the the objects to store it
@@ -87,18 +88,12 @@ async def scrape_sources(sources):
                 print(username)
 
                 query_username = f"from:{username} has:media -is:retweet -is:reply"
-                encoded_username = urllib.parse.quote(query_username)
-
-                # Tweets from the last 24 hours
                 start_time = (datetime.now() - timedelta(days=1)
                               ).isoformat() + 'Z'
-
-                encoded_start_time = urllib.parse.quote(start_time)
-
                 query_parameters = {
-                    "query": encoded_username,
+                    "query": query_username,
                     "max_results": 10,
-                    "start_time": encoded_start_time
+                    "start_time": start_time
                 }
 
                 headers = await request_headers(bearer_token)
@@ -107,20 +102,24 @@ async def scrape_sources(sources):
                 
                 if response_json is None:
                     print("No data recieved for now, we will try again later")
-                elif response_json.get('meta', {}).get('result.count', 0):
+                elif response_json.get('meta', {}).get('result_count', 0) == 0:
                     print(f"No tweets in found in the username {username}")
-                elif isinstance(response_json.get('data'), list):
+
+                elif 'data' in response_json:
                     print(f"Tweets found from username {username}")
 
                     for tweet in response_json['data']:
                         tweet_id = tweet['id']
-                        if not await is_content_processed(tweet_id):
+                        redis_key = f"x.com/{tweet_id}"
+                        if await is_content_processed(redis_key):
+                            print("Skipping already processed story")
+                        elif not await is_content_processed(redis_key):
                             combined_text['stories'].append({
                                 "headline": tweet['text'],
                                 "link": f"https://x.com/i/status/{tweet_id}",
                                 "date_posted": start_time
                             })
-                            await mark_content_processed(tweet_id)
+                            await mark_content_processed(redis_key)
 
                 else:
                     print(f"Expected an tweets.data to be an arrray: {response_json.get('data')}")
@@ -138,18 +137,21 @@ async def scrape_sources(sources):
                     async with reddit:
                         subreddit = await reddit.subreddit(username)
                         stories = []
+                        redis_key = f"reddit/{username}"
+                        if await is_content_processed(redis_key):
+                            print("Skipping already processed story")
+                        elif not await is_content_processed(redis_key):
+                            async for post in subreddit.hot(limit=5):
+                                story = [
+                                    {
+                                        "headline": post.title,
+                                        "link": post.url,
+                                        "date_posted": post.created
+                                    }]
+                                stories.append(story)
+                                combined_text['stories'].extend(stories)
 
-                        async for post in subreddit.hot(limit=5):
-                            story = [
-                                {
-                                    "headline": post.title,
-                                    "link": post.url,
-                                    "date_posted": post.created
-                                }]
-                            stories.append(story)
-                            
-
-                        combined_text['stories'].extend(stories)
+                                await mark_content_processed(redis_key)
 
                 except Exception as e:
                     print(f"Error fetching reddit data: {e}")
@@ -163,7 +165,7 @@ async def scrape_sources(sources):
                         formatted_date = current_date.strftime("%x")
 
                         prompt_from_firecrawl = f"""
-                                Return only today's AI or LLM related story or post headlines and links in JSON format from the page content.
+                                Return only today's AI or LLM related story or post headlines and links in JS                                ON format from the page content.
                                 They must be posted today, {formatted_date}. The format should be:
                                 {{
                                 "stories": [
@@ -177,7 +179,7 @@ async def scrape_sources(sources):
                                 If there are no AI or LLM stories from today, return {{"stories": []}}.
                                 The source link is {source}.
                                 If a story link is not absolute, prepend {source} to make it absolute.
-                                Return only pure JSON in the specified format (no extra text, no markdown, no ```).
+                                Return only pure JSON in the specified format (no extra text, no markdown, no                               ```).
                                 """
 
                         scrape_result = app.scrape_url(source, {
@@ -191,7 +193,18 @@ async def scrape_sources(sources):
 
                         today_stories = scrape_result['extract']
                         print(today_stories)
-                        combined_text['stories'].extend(today_stories)
+
+                        
+                        hashed_link = sha256(today_stories['link'].encode()).hexdigest()
+                        redis_key = f"firecrawl/{hashed_link}"
+
+                        if await is_content_processed(redis_key):
+                            print("Skipping already processed story")
+
+                        elif not await is_content_processed(redis_key):
+                            combined_text['stories'].extend(today_stories)
+                            await mark_content_processed(redis_key)
+
                     except Exception as e:
                         print(f"Error while fetching news resources: {e}")
 

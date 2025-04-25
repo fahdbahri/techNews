@@ -69,7 +69,7 @@ async def generate_drafts(raw_stories: str):
             print("Failed to parse json.")
             return "Invailid JSON output."
 
-        header = f"🚀 AI and LLM Trends on X for {current_date}\n\n"
+        header = f"🚀 Latest news from AI and LLM for {current_date}\n\n"
 
         draft_post = header + "\n\n".join(
 
