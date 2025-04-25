@@ -28,7 +28,7 @@ async def get_sources():
                 'https://www.infoq.com/news',
                 'https://arxiv.org/list/cs.LG/recent',
                 'https://www.reuters.com/technology/artificial-intelligence/',
-                'https://simonwillison.net/',
+                'https://currentai.news/',
                 'https://buttondown.com/ainews/archive/'
             ]
             sources.extend(news_sources)
