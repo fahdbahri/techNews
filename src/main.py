@@ -13,11 +13,13 @@ async def main():
      scheduler = AsyncIOScheduler()
      
      # Schedule the job
-     scheduler.add_job(handle_cron, trigger=IntervalTrigger(hours=48), next_run_time=datetime.now())
+     scheduler.add_job(handle_cron, trigger=IntervalTrigger(hours=48), misfire_grace_time=None)
      
      try:
          scheduler.start()
          print("Scheduler started. Press Ctrl+C to exit")
+
+         await handle_cron()
          
          # Keep the script running
          while True:
