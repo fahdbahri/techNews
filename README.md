@@ -101,7 +101,8 @@ To make deployment easier, the project includes Docker configurations.
    ```
 
 ## Project structure
-   
+
+```bash
 .
 ├── docker-compose.yml      # Docker Compose configuration
 ├── Dockerfile              # Docker image configuration
@@ -114,4 +115,4 @@ To make deployment easier, the project includes Docker configurations.
 │   ├── __init__.py         # Python package initialization
 │   └── main.py             # Main application entry point
 
-
+```
