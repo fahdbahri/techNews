@@ -1,29 +1,73 @@
 # Tech News
 
-This project aggregates news from key sources worldwide, summarizes it, and delivers real-time updates directly to you via Telegram.
+### Keep up with trending topics about new technologies all in one place.
 
-## Features
+Tech News is a solution for developers who are struggling to keep up with the new trends, its an AI automated systems that collects latest news, analyzes from popular platforms, then sends it to Telegram, it is a life saver for me and it will be for you by:
+   - Saving your time, instead of juggling through multiple platforms, i can find everthing in one place
+   - It will keep you informed of releveant posts or technologies of your interest
+   - Adaptability for new apportunities or incoming trends and taking advantage from it
 
-- **AI-Powered Summaries**: Uses [Llama](https://github.com/facebookresearch/llama) to generate concise, accurate summaries of trending news.
-- **Real-Time Notifications**: Stay updated on new trends and launches with instant Telegram Bot alerts.
-- **Efficient Workflow**: Save time and focus on what's important by cutting through the noise of multiple platforms.
-- **Open Source**: Clone it, customize it, and make it your own!
+This advantage will difinatly give you a fair advantage, you can now spend time looking for trends and more time for creating impacting and building
 
-## Technologies Used
 
-- **Python**: The backbone of the system.
-- **Llama**: AI model for powerful summarization and content processing.
-- **Firecrawl**: Web crawling for collecting posts and updates from key sources.
-- **Together AI**: Collaboration and AI infrastructure.
-- **Telegram Bot**: Sends real-time notifications to your Telegram account.
+## Demo -Final Result-
+
+![screenshot-20250501-163319Z-selected](https://github.com/user-attachments/assets/fb7c8f03-7fae-4b9d-b764-5aeae9f14b6c)
 
 ## How It Works
 
-1. **Aggregates News**: Gathers updates from industry leaders and key influencers across platforms.
-2. **Summarizes**: Uses Llama to provide concise, easy-to-digest summaries.
-3. **Notifies**: Sends Telegram notifications whenever new trends or launches are detected.
+1. **Data Collection**:
+      - Monitors selected posts on Twitter/X and Reddit (Note: Twitter free API monitor only one account every 15 minuts
+      - Monitors websites of your choice using firecrawl
+      - Runs on a scheduled tims of your choice using cron jobs
+      - For any duplicated content and news, it will be handled using Redis TLL for avoiding duplication
+3. **AI analyze**
+      - Processed collected resources through Together AI
+      - identifies emerging trends, what important releases, and news
+      - Analyze sentiment and relevance
+5. **Notification System**
+      - Provide context about the trend and its resource (link, post, etc)
 
-## Installation
+
+## Features
+
+- **AI-Powered Summaries** summarize and analyze trends using Together AI: .
+- **Real-Time Notifications**: Stay updated on new trends and launches with instant Telegram Bot alerts.
+- **Scheduler**: Scheduled monitoring using cron jobs.
+- **Website monitoring**: using Reddit API and firecrawl!
+
+## Prerequisites
+
+- Python 3.8+
+- pip
+- Docker
+- Docker Compose
+- Telegram account
+- API keys for required services (see Environment Variables)
+
+## Enviroment Variable 
+
+creating `.env` file and configure the following variables
+
+```bash
+
+# Required if monitoring web pages (https://www.firecrawl.dev/)
+FIRECRAWL_API=""
+
+
+# Required if monitoring Twitter/X trends (https://developer.x.com/)
+X_API_KEY=""
+X_API_KEY_SECRET=""
+X_API_BEARER=""
+
+# Create a bot on Telegram using (https://core.telegram.org/bots#botfather)
+TELEGRAM_BOT_TOKEN= ""
+TELEGRAM_CHAT_ID=""
+TOGETHER_API_KEY=""
+
+```
+
+## Getting started
 
 1. **Clone the Repository**:
    ```bash
@@ -37,10 +81,6 @@ This project aggregates news from key sources worldwide, summarizes it, and deli
    pip install -r requirements.txt
    ```
 
-3. **Set Up Telegram Bot**:
-   - Create a bot on Telegram using [BotFather](https://core.telegram.org/bots#botfather).
-   - Save the bot token and update the code in the project to include your token.
-
 4. **Run the Application**:
    ```bash
    python src/main.py
@@ -50,20 +90,28 @@ This project aggregates news from key sources worldwide, summarizes it, and deli
 
 To make deployment easier, the project includes Docker configurations.
 
-1. **Build the Docker Image**:
+1. **Start the docker installation**:
    ```bash
-   docker-compose build
+   docker-compose up --build -d
    ```
 
-2. **Run the Application**:
+2. **Stop the application**:
    ```bash
-   docker-compose up
+   docker-compose down
    ```
+
+## Project structure
    
-## Acknowledgments
+.
+├── docker-compose.yml      # Docker Compose configuration
+├── Dockerfile              # Docker image configuration
+├── LICENSE                 # Project license
+├── README.md               # Project documentation
+├── requirements.txt        # Python dependencies
+├── src/
+│   ├── controllers/        # Application controllers
+│   ├── services/           # Application services
+│   ├── __init__.py         # Python package initialization
+│   └── main.py             # Main application entry point
 
-Thanks to:
-- The creators of [Llama](https://github.com/facebookresearch/llama) for their groundbreaking AI model.
-- The [Together AI](https://together.xyz/) platform for seamless integration.
-- The open-source community for making this project possible.
 
