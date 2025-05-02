@@ -67,6 +67,41 @@ TOGETHER_API_KEY=""
 
 ```
 
+### Note: You can include your favorite resources in `src/services/list_sourcs.py` Example:
+
+```bash
+
+sources = []
+
+        if firecrawl_key:
+            news_sources = [
+                'https://aws.amazon.com/blogs/machine-learning/',
+                'https://www.infoq.com/news',
+                'https://arxiv.org/list/cs.LG/recent',
+                'https://www.reuters.com/technology/artificial-intelligence/',
+                'https://currentai.news/',
+                'https://buttondown.com/ainews/archive/'
+            ]
+            sources.extend(news_sources)
+
+
+        if x_bearer_token:
+            x_sources = [
+                "https://x.com/skirano"
+            ]
+            sources.extend(x_sources)
+        
+        # Reddit API 
+        if client_id and client_secret and client_user:
+            reddit_sources = [
+                "https://www.reddit.com/r/LocalLLaMA/",
+                "https://www.reddit.com/r/singularity/",
+                "https://www.reddit.com/r/ControlProblem/",
+            ]
+
+            sources.extend(reddit_sources)
+```
+
 ## Getting started
 
 1. **Clone the Repository**:
