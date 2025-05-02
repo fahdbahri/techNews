@@ -67,7 +67,7 @@ TOGETHER_API_KEY=""
 
 ```
 
-### Note: You can include your favorite resources in `src/services/list_sourcs.py` Example:
+#### Note: You can include your favorite resources in `src/services/list_sourcs.py` Example:
 
 ```bash
 
