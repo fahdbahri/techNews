@@ -8,7 +8,7 @@ import urllib.parse
 import os
 import aiohttp
 import asyncio
-from .util_cache import is_content_processed, mark_content_processed
+from .utils_cache import is_content_processed, mark_content_processed
 from hashlib import sha256
 
 load_dotenv()
@@ -74,57 +74,14 @@ async def scrape_sources(sources):
         print(f"Scraping {num_sources} sources...")
 
         combined_text = {'stories': []}
-
-        # configuring the toggel behaviour
-        use_x = True
+ 
+        
         use_reddit = True
         use_scrape = True
 
         for source in sources:
             print(f"Source: {source}")
-            if "x.com" in source and use_x:
-
-                username = source.split("/")[-1]
-                print(username)
-
-                query_username = f"from:{username} has:media -is:retweet -is:reply"
-                start_time = (datetime.now() - timedelta(days=1)
-                              ).isoformat() + 'Z'
-                query_parameters = {
-                    "query": query_username,
-                    "max_results": 10,
-                    "start_time": start_time
-                }
-
-                headers = await request_headers(bearer_token)
-                response_json = await connect_to_endpoint(endpoint_url, headers, query_parameters)
-                
-                
-                if response_json is None:
-                    print("No data recieved for now, we will try again later")
-                elif response_json.get('meta', {}).get('result_count', 0) == 0:
-                    print(f"No tweets in found in the username {username}")
-
-                elif 'data' in response_json:
-                    print(f"Tweets found from username {username}")
-
-                    for tweet in response_json['data']:
-                        tweet_id = tweet['id']
-                        redis_key = f"x.com/{tweet_id}"
-                        if await is_content_processed(redis_key):
-                            print("Skipping already processed story")
-                        elif not await is_content_processed(redis_key):
-                            combined_text['stories'].append({
-                                "headline": tweet['text'],
-                                "link": f"https://x.com/i/status/{tweet_id}",
-                                "date_posted": start_time
-                            })
-                            await mark_content_processed(redis_key)
-
-                else:
-                    print(f"Expected an tweets.data to be an arrray: {response_json.get('data')}")
-
-            elif "reddit.com" in source and use_reddit:
+            if "reddit.com" in source and use_reddit:
 
                 username = source.split('/')[-2]
 

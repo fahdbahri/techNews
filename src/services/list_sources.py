@@ -12,7 +12,6 @@ async def get_sources():
 
         # Get the API keys
         firecrawl_key = bool(os.getenv("FIRECRAWL_API"))
-        x_bearer_token = bool(os.getenv("X_API_BEARER"))
 
         # Reddit api keys
         client_id = bool(os.getenv("CLIENT_ID"))
@@ -24,28 +23,19 @@ async def get_sources():
 
         if firecrawl_key:
             news_sources = [
-                'https://aws.amazon.com/blogs/machine-learning/',
-                'https://www.infoq.com/news',
                 'https://arxiv.org/list/cs.LG/recent',
                 'https://www.reuters.com/technology/artificial-intelligence/',
-                'https://currentai.news/',
-                'https://buttondown.com/ainews/archive/'
+                'https://currentai.news/'
             ]
-            sources.extend(news_sources)
-
-
-        if x_bearer_token:
-            x_sources = [
-                "https://x.com/skirano"
-            ]
-            sources.extend(x_sources)
+            sources.extend(news_sources) 
         
         # Reddit API 
         if client_id and client_secret and client_user:
             reddit_sources = [
                 "https://www.reddit.com/r/LocalLLaMA/",
                 "https://www.reddit.com/r/singularity/",
-                "https://www.reddit.com/r/ControlProblem/",
+                "https://www.reddit.com/r/ControlProblem/"
+                "https://www.reddit.com/r/technews/",
             ]
 
             sources.extend(reddit_sources)
@@ -57,4 +47,3 @@ async def get_sources():
     except Exception as e:
         print(f"An error occured: {e}")
         return []
-
