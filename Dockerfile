@@ -13,6 +13,13 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install -r requirements.txt
 
+RUN pip install crawl4ai # The avoid dependency conflict
+
+
+# Install Playwright and its browser dependencies
+RUN pip install playwright \
+    && playwright install --with-deps
+
 # Copy the rest of the application code
 COPY ./src ./src
 
