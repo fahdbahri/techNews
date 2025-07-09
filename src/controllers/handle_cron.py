@@ -14,6 +14,7 @@ async def handle_cron() -> None:
         raw_stories = await scrape_sources(cron_sources)
         raw_stories_string = json.dumps(raw_stories)
         draft_post = await generate_drafts(raw_stories_string)
+        print(f"draft_post: {draft_post}")
         audio_file = await convert_to_audio(draft_post)
         result = await send_drafts(draft_post)
 

@@ -8,10 +8,7 @@ async def get_sources():
         # Load the environment
         load_dotenv()
 
-        print("fetching sources...")
-
-        # Get the API keys
-        firecrawl_key = bool(os.getenv("FIRECRAWL_API"))
+        print("fetching sources...") 
 
         # Reddit api keys
         client_id = bool(os.getenv("CLIENT_ID"))
@@ -21,13 +18,13 @@ async def get_sources():
 
         sources = []
 
-        if firecrawl_key:
-            news_sources = [
-                'https://arxiv.org/list/cs.LG/recent',
-                'https://www.reuters.com/technology/artificial-intelligence/',
+    
+        news_sources = [
+                'https://techcrunch.com/',
+                'https://www.dailyrotation.com/',
                 'https://currentai.news/'
-            ]
-            sources.extend(news_sources) 
+        ]
+        sources.extend(news_sources) 
         
         # Reddit API 
         if client_id and client_secret and client_user:

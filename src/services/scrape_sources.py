@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 from firecrawl import FirecrawlApp
+from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode, LLMConfig
+from crawl4ai.extraction_strategy import LLMExtractionStrategy
 import asyncpraw
 from datetime import datetime, timedelta
 from pydantic import BaseModel
@@ -10,18 +12,12 @@ import aiohttp
 import asyncio
 from .utils_cache import is_content_processed, mark_content_processed
 from hashlib import sha256
+import json
 
 load_dotenv()
 
-# Load Firecrawl app
-app = FirecrawlApp(api_key=os.getenv("FIRECRAWL_API"))
+gemini_key = os.getenv("GEMINI_API_KEY")
 
-# Load the bearer token and endpoint for X 
-bearer_token = os.getenv("X_API_BEARER") 
-endpoint_url = "https://api.twitter.com/2/tweets/search/recent"
-
-
-# Define the the objects to store it
 
 # Defining what a single story
 class Story(BaseModel):
@@ -30,16 +26,12 @@ class Story(BaseModel):
     data_posted: str
 
 
-
 class Stories:
     stories: List[Story]
 
 
-
 # Requesting data by connecting to the endpoint
-
 async def request_headers(bearer_token: str) -> dict:
-
     return {"Authorization": f"Bearer {bearer_token}"}
 
 
@@ -49,47 +41,47 @@ async def connect_to_endpoint(endpoint_url: str, headers: dict, parameters: dict
     async with aiohttp.ClientSession() as session:
         while retry_count < max_retries:
             try:
-                async with session.get(endpoint_url, headers=headers, params=parameters) as response: 
-                    if response.status == 200: 
-                        return await response.json() 
-                    if response.status >= 400 and response.status < 500: 
+                async with session.get(endpoint_url, headers=headers, params=parameters) as response:
+                    if response.status == 200:
+                        return await response.json()
+                    if response.status >= 400 and response.status < 500:
                         print(f"Client error: {response.status}")
-                        return 
-                    retry_count += 1 
-                    if retry_count < max_retries: 
-                        await asyncio.sleep(min(2 ** retry_count, 60)) 
-            except Exception as e: 
-                if retry_count >= max_retries - 1: 
-                    raise Exception( f"Failed after {max_retries} attempts: {e}") 
-                retry_count += 1 
-        
+                        return
+                    retry_count += 1
+                    if retry_count < max_retries:
+                        await asyncio.sleep(min(2 ** retry_count, 60))
+            except Exception as e:
+                if retry_count >= max_retries - 1:
+                    raise Exception(f"Failed after {max_retries} attempts: {e}")
+                retry_count += 1
+
         raise Exception("Max retries exceeded")
-# Scrape the sources   
 
 
-async def scrape_sources(sources):    
+# Scrape the sources
+async def scrape_sources(sources):
     try:
-
         num_sources = len(sources)
         print(f"Scraping {num_sources} sources...")
 
         combined_text = {'stories': []}
- 
-        
+
         use_reddit = True
-        use_scrape = True
+        use_crawl4ai = True
 
         for source in sources:
             print(f"Source: {source}")
+
             if "reddit.com" in source and use_reddit:
+                print("Using Reddit")
 
                 username = source.split('/')[-2]
 
                 start_time = (datetime.now() - timedelta(days=1)).timestamp()
 
                 reddit = asyncpraw.Reddit(user_agent=os.getenv("CLIENT_USER"), client_id=os.getenv("CLIENT_ID"),
-                                     client_secret=os.getenv("CLIENT_SECRET"))
-                
+                                          client_secret=os.getenv("CLIENT_SECRET"))
+
                 try:
                     async with reddit:
                         subreddit = await reddit.subreddit(username)
@@ -113,54 +105,82 @@ async def scrape_sources(sources):
                 except Exception as e:
                     print(f"Error fetching reddit data: {e}")
 
-
             else:
-                if use_scrape:
+                if use_crawl4ai:
                     try:
-
                         current_date = datetime.now()
                         formatted_date = current_date.strftime("%x")
 
-                        prompt_from_firecrawl = f"""
-                                Return only today's AI or LLM related story or post headlines and links in JS                                ON format from the page content.
-                                They must be posted today, {formatted_date}. The format should be:
-                                {{
-                                "stories": [
-                                    {{
-                                        "headline": "headline1",
-                                        "link": "link1",
-                                        "date_posted": "YYYY-MM-DD"
-                                    }}
-                                ]
-                                }}
-                                If there are no AI or LLM stories from today, return {{"stories": []}}.
-                                The source link is {source}.
-                                If a story link is not absolute, prepend {source} to make it absolute.
-                                Return only pure JSON in the specified format (no extra text, no markdown, no                               ```).
-                                """
+                        prompt_from_crawl4ai = f"""Return AI/ML stories from today ({formatted_date}) as JSON:  
+                        {{  
+                          "stories": [  
+                                      {{  
+                                        "headline": "headline",  
+                                        "link": "absolute_url",  
+                                        "date_posted": "{formatted_date}"  
+                                        }}  
+                                      ]  
+                          }}  
+                        Only today's stories. Make links absolute. Pure JSON only."""
 
-                        scrape_result = app.scrape_url(source, {
-                            'formats': ['extract'],
-                            'extract': {
-                                'prompt': prompt_from_firecrawl,
-                                'schema': Story.model_json_schema(),
-                            }
-                        })
+                        llm_config = LLMConfig(provider="gemini/gemini-2.0-flash", api_token=gemini_key)
 
+                        llm_strategy = LLMExtractionStrategy(
+                            llm_config=llm_config,
+                            schema=Story.model_json_schema(),
+                            extraction_type="schema",
+                            instruction=prompt_from_crawl4ai,
+                            chunk_token_threshold=1000,
+                            apply_chunking=True, overlap_rate=0.0,
+                            input_format="markdown"
+                        )
 
-                        today_stories = scrape_result['extract']
-                        print(today_stories)
+                        crawl_config = CrawlerRunConfig(
+                            extraction_strategy=llm_strategy,
+                            cache_mode=CacheMode.BYPASS
+                        )
 
-                        
-                        hashed_link = sha256(today_stories['link'].encode()).hexdigest()
-                        redis_key = f"firecrawl/{hashed_link}"
+                        browser_config = BrowserConfig(headless=True)
 
-                        if await is_content_processed(redis_key):
-                            print("Skipping already processed story")
+                        async with AsyncWebCrawler(config=browser_config) as crawler:
+                            result = await crawler.arun(url=source, config=crawl_config)
 
-                        elif not await is_content_processed(redis_key):
-                            combined_text['stories'].extend(today_stories)
-                            await mark_content_processed(redis_key)
+                            if result.success:
+                                print(f"Successfully scraped {source}") 
+
+                                today_stories = json.loads(result.extracted_content)
+
+                                print(f"stories: {today_stories}")
+
+                                # Fix: Handle the structure properly
+                                if isinstance(today_stories, list):
+                                    # Handle list of results from crawl4ai
+                                    for result_item in today_stories:
+                                        if isinstance(result_item, dict) and 'stories' in result_item and not result_item.get('error', False):
+                                            stories_list = result_item['stories']
+                                            for story in stories_list:
+                                                if isinstance(story, dict) and 'link' in story:
+                                                    hashed_link = sha256(story['link'].encode()).hexdigest()
+                                                    redis_key = f"crawl4ai/{hashed_link}"
+
+                                                    if await is_content_processed(redis_key):
+                                                        print("Skipping already processed story")
+                                                    elif not await is_content_processed(redis_key):
+                                                        combined_text['stories'].append(story)
+                                                        await mark_content_processed(redis_key)
+                                elif isinstance(today_stories, dict) and 'stories' in today_stories:
+                                    # Handle single result object
+                                    stories_list = today_stories['stories']
+                                    for story in stories_list:
+                                        if isinstance(story, dict) and 'link' in story:
+                                            hashed_link = sha256(story['link'].encode()).hexdigest()
+                                            redis_key = f"crawl4ai/{hashed_link}"
+
+                                            if await is_content_processed(redis_key):
+                                                print("Skipping already processed story")
+                                            elif not await is_content_processed(redis_key):
+                                                combined_text['stories'].append(story)
+                                                await mark_content_processed(redis_key)
 
                     except Exception as e:
                         print(f"Error while fetching news resources: {e}")
