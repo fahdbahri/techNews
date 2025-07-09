@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-from firecrawl import FirecrawlApp
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode, LLMConfig
 from crawl4ai.extraction_strategy import LLMExtractionStrategy
 import asyncpraw

@@ -14,4 +14,4 @@ async def is_content_processed(content_id: str) -> bool:
 
 async def mark_content_processed(content_id: str):
     client = get_redis_client()
-    client.set(content_id, "processed", ex=604800)  # Expire after 7 days (604800 seconds)
+    client.set(content_id, "processed", ex=604800)
