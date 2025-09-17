@@ -17,24 +17,26 @@ This advantage will difinatly give you a fair advantage, you can now spend time 
 ## How It Works
 
 1. **Data Collection**:
-      - Monitors selected posts on Twitter/X and Reddit (Note: Twitter free API monitor only one account every 15 minuts
-      - Monitors websites of your choice using firecrawl
+      - Monitors selected posts on websites and Reddit 
+      - Monitors websites of your choice using crawl4ai 
       - Runs on a scheduled tims of your choice using cron jobs
-      - For any duplicated content and news, it will be handled using Redis TLL for avoiding duplication
+      - For any duplicated content and news, it will be handled using Redis TLL to avoid any articles or news that you already been seen
 3. **AI analyze**
-      - Processed collected resources through Together AI
+      - generated drafts from the collected resources through Together AI
       - identifies emerging trends, what important releases, and news
       - Analyze sentiment and relevance
 5. **Notification System**
       - Provide context about the trend and its resource (link, post, etc)
+6. **Test to speach**
+      - Convert the generated draft to an audio file using ElevenLabs for users to listen to
 
 
 ## Features
 
-- **AI-Powered Summaries** summarize and analyze trends using Together AI: .
+- **AI-Powered scraping** scrape and analyze trends using crawl4ai and Gemini.
+- **Generate Draft** generate a clean draft using ollama and Together AI
 - **Real-Time Notifications**: Stay updated on new trends and launches with instant Telegram Bot alerts.
 - **Scheduler**: Scheduled monitoring using cron jobs.
-- **Website monitoring**: using Reddit API and firecrawl!
 
 ## Prerequisites
 
@@ -50,56 +52,51 @@ This advantage will difinatly give you a fair advantage, you can now spend time 
 creating `.env` file and configure the following variables
 
 ```bash
-
-# Required if monitoring web pages (https://www.firecrawl.dev/)
-FIRECRAWL_API=""
-
-
-# Required if monitoring Twitter/X trends (https://developer.x.com/)
-X_API_KEY=""
-X_API_KEY_SECRET=""
-X_API_BEARER=""
+# Generate the client keys from (https://www.reddit.com/prefs/apps)
+CLIENT_ID=""
+CLIENT_SECRET=""
+CLIENT__USER=""
 
 # Create a bot on Telegram using (https://core.telegram.org/bots#botfather)
 TELEGRAM_BOT_TOKEN= ""
 TELEGRAM_CHAT_ID=""
+
+
+# Together api key to generate a draft (https://docs.together.ai/docs/quickstart)
 TOGETHER_API_KEY=""
 
+# Gemini API key for cleaning scraped sources with crawl4ai (free version is used) (https://ai.google.dev/gemini-api/docs/api-key)
+GEMINI_API_KEY=""
+
+# ElevenLabs API key for test to speach feature (https://elevenlabs.io/app/developers/api-keys)
+ELEVENLABS_API_KEY=""
 ```
 
 #### Note: You can include your favorite resources in `src/services/list_sourcs.py` Example:
 
 ```bash
 
-sources = []
+        sources = []
 
-        if firecrawl_key:
-            news_sources = [
-                'https://aws.amazon.com/blogs/machine-learning/',
-                'https://www.infoq.com/news',
-                'https://arxiv.org/list/cs.LG/recent',
-                'https://www.reuters.com/technology/artificial-intelligence/',
-                'https://currentai.news/',
-                'https://buttondown.com/ainews/archive/'
-            ]
-            sources.extend(news_sources)
-
-
-        if x_bearer_token:
-            x_sources = [
-                "https://x.com/skirano"
-            ]
-            sources.extend(x_sources)
+    
+        news_sources = [
+                'https://techcrunch.com/',
+                'https://www.dailyrotation.com/',
+                'https://currentai.news/'
+        ]
+        sources.extend(news_sources) 
         
         # Reddit API 
         if client_id and client_secret and client_user:
             reddit_sources = [
                 "https://www.reddit.com/r/LocalLLaMA/",
                 "https://www.reddit.com/r/singularity/",
-                "https://www.reddit.com/r/ControlProblem/",
+                "https://www.reddit.com/r/ControlProblem/"
+                "https://www.reddit.com/r/technews/",
             ]
 
             sources.extend(reddit_sources)
+
 ```
 
 ## Getting started
