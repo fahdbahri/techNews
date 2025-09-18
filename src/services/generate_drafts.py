@@ -8,6 +8,7 @@ from together import Together
 from elevenlabs.client import ElevenLabs
 from elevenlabs import save
 
+
 load_dotenv()
 
 client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
@@ -97,7 +98,7 @@ async def convert_to_audio(draft_post: str):
         lines = draft_post.split('\n')
         audio_text = []
         for line in lines:
-            if line.strip() and not line.strip().startswith('http'):
+            if line.strip() and not line.strip().startswith('https'):
                 # Remove bullet points and clean up for audio
                 clean_line = line.replace('•', '').strip()
                 if clean_line:
