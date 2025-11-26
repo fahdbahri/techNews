@@ -1,6 +1,6 @@
 # Tech News
 
-### Keep up with trending topics about new technologies all in one place.
+### Keep up with trending topics about new technologies all in one place for free.
 
 Tech News is a solution for developers who are struggling to keep up with the new trends, its an AI automated systems that collects latest news, analyzes from popular platforms, then sends it to Telegram, it is a life saver for me and it will be for you by:
    - Saving your time, instead of juggling through multiple platforms, i can find everthing in one place
@@ -10,9 +10,12 @@ Tech News is a solution for developers who are struggling to keep up with the ne
 This advantage will difinatly give you a fair advantage, you can now spend time looking for trends and more time for creating impacting and building
 
 
-## Demo -Final Result-
+## Demo
 
-![screenshot-20250501-163319Z-selected](https://github.com/user-attachments/assets/fb7c8f03-7fae-4b9d-b764-5aeae9f14b6c)
+
+https://github.com/user-attachments/assets/4402d21c-12b5-486a-a60d-26fdfa4d38c9
+
+
 
 ## How It Works
 
