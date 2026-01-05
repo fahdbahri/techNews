@@ -1,21 +1,14 @@
-# techNews
+# Tech News
 
-### Keep up with trending topics about new technologies all in one place for free.
+### Keep up with trending topics about new technologies all in one place for free. Aspired by 
 
-techNews is a solution for developers who are struggling to keep up with the new trends, its an AI automated systems that collects latest news, analyzes from popular platforms, then sends it to Telegram, it is a life saver for me and it will be for you by:
-
-   - Saving your time, instead of juggling through multiple platforms, i can find everthing in one place
-   - It will keep you informed of releveant posts or technologies of your interest
-   - Adaptability for new apportunities or incoming trends and taking advantage from it
-
-This advantage will difinatly give you a fair advantage, you can now spend time looking for trends and more time for creating impacting and building
+Tech News is a solution for developers who are struggling to keep up with new trends, it analyzes from popular platforms, then sends it to Telegram.
 
 
 ## Demo
 
 
 https://github.com/user-attachments/assets/4402d21c-12b5-486a-a60d-26fdfa4d38c9
-
 
 
 ## How It Works
@@ -25,27 +18,19 @@ https://github.com/user-attachments/assets/4402d21c-12b5-486a-a60d-26fdfa4d38c9
       - Monitors websites of your choice using crawl4ai 
       - Runs on a scheduled tims of your choice using cron jobs
       - For any duplicated content and news, it will be handled using Redis TLL to avoid any articles or news that you already been seen
-3. **AI analyze**
+2. **AI analyze**
       - generated drafts from the collected resources through Together AI
       - identifies emerging trends, what important releases, and news
       - Analyze sentiment and relevance
-5. **Notification System**
+3. **Notification System**
       - Provide context about the trend and its resource (link, post, etc)
-6. **Test to speach**
+4. **Test to speach**
       - Convert the generated draft to an audio file using ElevenLabs for users to listen to
 
 
-## Features
-
-- **AI-Powered scraping** scrape and analyze trends using crawl4ai and Gemini.
-- **Generate Draft** generate a clean draft using ollama and Together AI
-- **Real-Time Notifications**: Stay updated on new trends and launches with instant Telegram Bot alerts.
-- **Scheduler**: Scheduled monitoring using cron jobs.
-
 ## Prerequisites
 
-- Python 3.8+
-- pip
+- Python
 - Docker
 - Docker Compose
 - Telegram account
